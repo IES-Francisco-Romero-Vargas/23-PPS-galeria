@@ -1,4 +1,4 @@
-name: flake8 Lint
+name: Dev Ops
 
 on:
   push:
@@ -61,3 +61,15 @@ jobs:
             docker stop web && docker rm web
             docker rmi angoies/galeria
             docker run -d -p 80:5000 --name web angoies/galeria
+
+  health_check_job:
+    runs-on: ubuntu-latest
+    name: Check for status 200 and title text "lokerse.dev"
+    needs: aws
+    steps:
+      - uses: actions/checkout@v2
+      - id: test
+        uses: johnlokerse/website-healthcheck@v2
+        with:
+          web-url: "http://${{ secrets.AWS_HOSTNAME }}"
+          scan-for-text: "Ejemplo Flask App de Ango"
